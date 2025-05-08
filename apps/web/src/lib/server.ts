@@ -6,11 +6,13 @@ import { schools } from "@/db/schema/school";
 import { users } from "@/db/schema/users";
 import { auth } from "@/lib/auth";
 import { CreateSchoolSchema, SignupSchema } from "@/lib/schema";
-import { UserRole } from "@/lib/types";
+import { UserRole, UserRoleType } from "@/lib/types";
 import {
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
 } from "@repo/actionkit";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 export async function initializeLMS(
@@ -67,4 +69,20 @@ export async function initializeLMS(
 
     throw new InternalServerErrorException("Failed to initialize LMS", error);
   }
+}
+
+export async function getUserRole(userId: string): Promise<UserRoleType> {
+  const role = await db
+    .select({
+      role: users.role,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (role.length !== 1 || !role[0]?.role) {
+    throw new NotFoundException("User not found");
+  }
+
+  return role[0].role;
 }

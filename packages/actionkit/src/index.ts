@@ -97,6 +97,13 @@ export class BadRequestException extends HttpException {
   }
 }
 
+export class NotFoundException extends HttpException {
+  constructor(message: string = "Not Found", error?: any) {
+    super(message, 404, error);
+    this.name = "NotFoundException";
+  }
+}
+
 export class InternalServerErrorException extends HttpException {
   constructor(message: string = "Internal Server Error", error?: any) {
     super(message, 500, error);

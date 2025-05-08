@@ -3,9 +3,11 @@ import { accounts } from "@/db/schema/accounts";
 import { sessions } from "@/db/schema/sessions";
 import { users } from "@/db/schema/users";
 import { verifications } from "@/db/schema/verifications";
+import { getUserRole } from "@/lib/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { customSession } from "better-auth/plugins";
 
 const drizzleSchemas = { users, accounts, sessions, verifications };
 
@@ -25,6 +27,9 @@ export const auth = betterAuth({
   },
   session: {
     modelName: "sessions",
+    cookieCache: {
+      enabled: true,
+    },
   },
   account: {
     modelName: "accounts",
@@ -34,7 +39,22 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
   },
   advanced: { database: { generateId: false } },
-  plugins: [nextCookies()],
+  plugins: [
+    customSession(async ({ user, session }) => {
+      // Right now we read from DB, we will need a cache for this later
+      const role = await getUserRole(user.id);
+
+      return {
+        session,
+        user: {
+          ...user,
+          role,
+        },
+      };
+    }),
+    nextCookies(),
+  ],
 });

@@ -23,6 +23,7 @@ import { initializeLMS } from "@/lib/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { handleAction } from "@repo/actionkit";
 import { MoveRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,6 +31,8 @@ import { z } from "zod";
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("user");
+
+  const router = useRouter();
 
   const userForm = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
@@ -59,7 +62,7 @@ export default function Page() {
     };
 
     const id = toast.loading("Initializing LMS...");
-    const { success, message, error } = await handleAction(
+    const { success, message } = await handleAction(
       initializeLMS,
       user,
       values,
@@ -68,9 +71,12 @@ export default function Page() {
     toast.dismiss(id);
     if (success) {
       toast.success("LMS initialised successfully");
+      router.push("/login");
     } else {
       toast.error(message);
-      console.log(error);
+      setActiveTab("user");
+      userForm.reset();
+      schoolForm.reset();
     }
   };
 

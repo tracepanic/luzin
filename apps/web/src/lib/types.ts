@@ -3,3 +3,5 @@ export const UserRole = {
   TEACHER: "teacher",
   ADMIN: "admin",
 } as const;
+
+export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
