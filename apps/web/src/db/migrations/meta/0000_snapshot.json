@@ -1,5 +1,5 @@
 {
-  "id": "e7d1aa23-cf8a-46bf-aa3b-9fa6a08bc30f",
+  "id": "f0b66853-bdb0-442e-9fcf-5f7394d90a9a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -389,9 +389,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "type": {
-          "name": "type",
-          "type": "user_type",
+        "role": {
+          "name": "role",
+          "type": "user_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -512,8 +512,8 @@
     }
   },
   "enums": {
-    "public.user_type": {
-      "name": "user_type",
+    "public.user_role": {
+      "name": "user_role",
       "schema": "public",
       "values": [
         "student",

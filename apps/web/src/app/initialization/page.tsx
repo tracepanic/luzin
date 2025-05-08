@@ -25,6 +25,7 @@ import { handleAction } from "@repo/actionkit";
 import { MoveRight } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export default function Page() {
@@ -57,11 +58,20 @@ export default function Page() {
       password: userForm.getValues("password"),
     };
 
-    const { data, message, success, error } = await handleAction(
+    const id = toast.loading("Initializing LMS...");
+    const { success, message, error } = await handleAction(
       initializeLMS,
       user,
       values,
     );
+
+    toast.dismiss(id);
+    if (success) {
+      toast.success("LMS initialised successfully");
+    } else {
+      toast.error(message);
+      console.log(error);
+    }
   };
 
   return (

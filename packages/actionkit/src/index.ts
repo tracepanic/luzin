@@ -97,6 +97,13 @@ export class BadRequestException extends HttpException {
   }
 }
 
+export class InternalServerErrorException extends HttpException {
+  constructor(message: string = "Internal Server Error", error?: any) {
+    super(message, 500, error);
+    this.name = "InternalServerErrorException";
+  }
+}
+
 export type ServerActionError = string | object | ZodError | HttpException;
 
 export interface ServerActionResponse<T> {
@@ -140,8 +147,8 @@ export async function handleAction<T, Args extends any[] = any[]>(
 
     return {
       success: false,
-      message: "Internal Server Error",
-      error: error?.message || "An unexpected error occurred.",
+      message: error?.message || "Internal Server Error",
+      error,
     };
   }
 }

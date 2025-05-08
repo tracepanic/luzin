@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
@@ -13,7 +14,10 @@ export default function Layout({
 }>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

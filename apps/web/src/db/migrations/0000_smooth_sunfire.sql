@@ -1,4 +1,4 @@
-CREATE TYPE "public"."user_type" AS ENUM('student', 'teacher', 'admin');--> statement-breakpoint
+CREATE TYPE "public"."user_role" AS ENUM('student', 'teacher', 'admin');--> statement-breakpoint
 CREATE TABLE "accounts" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE "users" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"email" text NOT NULL,
-	"type" "user_type" NOT NULL,
+	"role" "user_role" NOT NULL,
 	"email_verified" boolean NOT NULL,
 	"image" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
