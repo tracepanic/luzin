@@ -1,29 +1,25 @@
-"use client";
-
-import { Loader } from "@/components/custom/loader";
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { LayoutClient } from "@/app/admin/layout-client";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 
-export default function Layout({ children }: { children: ReactNode }) {
-  const router = useRouter();
-  const { data, isPending, error } = authClient.useSession();
+export default async function Layout({ children }: { children: ReactNode }) {
+  const [session] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+  ]);
 
-  if (isPending) {
-    return <Loader />;
-  }
-
-  if (!data || error) {
+  if (!session) {
     toast.error("Login to access this page");
-    router.push("/login");
+    redirect("/login");
     return;
   }
 
-  if (!data.user.role || data.user.role !== "admin") {
+  if (!session.user.role || session.user.role !== "admin") {
     toast.error("You don't have permissions to acess this page");
-    router.push(`/unauthorized?origin=${encodeURIComponent("/admin/*")}`);
+    redirect(`/unauthorized?origin=${encodeURIComponent("/admin/*")}`);
   }
 
-  return <div>{children}</div>;
+  return <LayoutClient user={session.user}>{children}</LayoutClient>;
 }
