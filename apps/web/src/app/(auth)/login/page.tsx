@@ -33,26 +33,34 @@ export default function Page() {
     defaultValues: {
       email: "",
       password: "",
+      rememberMe: false,
     },
   });
 
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    const id = toast.loading("Logging in...");
+
     await authClient.signIn.email(
       {
         email: values.email,
         password: values.password,
+        rememberMe: values.rememberMe,
       },
       {
         onSuccess: () => {
+          toast.dismiss(id);
           toast.success("Login successful");
           router.push("/admin");
         },
         onError: (ctx) => {
           form.reset();
-          toast.error(ctx.error.message);
+          toast.dismiss(id);
+          toast.error(ctx.error.message || "Login failed");
         },
       },
     );
+
+    toast.dismiss(id);
   };
 
   return (

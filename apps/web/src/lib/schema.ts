@@ -13,4 +13,5 @@ export const CreateSchoolSchema = z.object({
 export const LoginSchema = z.object({
   email: z.string().email().min(5).max(255),
   password: z.string().min(8).max(255),
+  rememberMe: z.boolean(),
 });

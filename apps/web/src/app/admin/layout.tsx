@@ -14,12 +14,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     return <Loader />;
   }
 
-  if (error) {
-    toast.error("Login to access this page");
-    router.push("/login");
-  }
-
-  if (!data) {
+  if (!data || error) {
     toast.error("Login to access this page");
     router.push("/login");
     return;

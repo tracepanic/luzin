@@ -3,6 +3,7 @@ import { accounts } from "@/db/schema/accounts";
 import { sessions } from "@/db/schema/sessions";
 import { users } from "@/db/schema/users";
 import { verifications } from "@/db/schema/verifications";
+import { sendVerificationEmail } from "@/emails";
 import { getUserRole } from "@/lib/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -41,10 +42,15 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
   },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail(user.email, url);
+    },
+  },
   advanced: { database: { generateId: false } },
   plugins: [
     customSession(async ({ user, session }) => {
-      // Right now we read from DB, we will need a cache for this later
+      // Right now we read from DB, we will definately need a cache for this
       const role = await getUserRole(user.id);
 
       return {

@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader } from "@/components/custom/loader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,17 +20,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateSchoolSchema, SignupSchema } from "@/lib/schema";
-import { initializeLMS } from "@/lib/server";
+import { initializeLMS, isLmsInitialized } from "@/lib/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { handleAction } from "@repo/actionkit";
 import { MoveRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export default function Page() {
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("user");
 
   const router = useRouter();
@@ -49,6 +51,21 @@ export default function Page() {
       name: "",
     },
   });
+
+  useEffect(() => {
+    (async function checkStatus() {
+      const { success, data } = await handleAction(isLmsInitialized);
+
+      if (success && data) {
+        toast.error("LMS already initialized");
+        router.push("/");
+        setLoading(false);
+        return;
+      } else {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const onUserSubmit = () => {
     setActiveTab("school");
@@ -71,7 +88,7 @@ export default function Page() {
     toast.dismiss(id);
     if (success) {
       toast.success("LMS initialised successfully");
-      router.push("/login");
+      router.push("/verify-email");
     } else {
       toast.error(message);
       setActiveTab("user");
@@ -79,6 +96,10 @@ export default function Page() {
       schoolForm.reset();
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <Card className="max-w-lg mb-32 container mt-10">

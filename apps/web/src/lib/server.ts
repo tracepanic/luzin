@@ -13,6 +13,7 @@ import {
   NotFoundException,
 } from "@repo/actionkit";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { z } from "zod";
 
 export async function initializeLMS(
@@ -32,6 +33,7 @@ export async function initializeLMS(
   }
 
   const response = await auth.api.signUpEmail({
+    headers: await headers(),
     body: {
       name: validUser.name,
       role: UserRole.ADMIN,
@@ -65,10 +67,31 @@ export async function initializeLMS(
       }
     });
   } catch (error) {
-    // You want to delete user created by better auth if this fails
+    // Delete user created by better auth if this fails
 
     throw new InternalServerErrorException("Failed to initialize LMS", error);
   }
+
+  await auth.api.sendVerificationEmail({
+    headers: await headers(),
+    body: {
+      email: validUser.email,
+      callbackURL: "/email-verification-successful",
+    },
+  });
+}
+
+export async function isLmsInitialized(): Promise<boolean> {
+  const [dbUser, dbSchool] = await Promise.all([
+    db.select().from(users).limit(1).execute(),
+    db.select().from(schools).limit(1).execute(),
+  ]);
+
+  if (dbUser.length === 1 || dbSchool.length === 1) {
+    return true;
+  }
+
+  return false;
 }
 
 export async function getUserRole(userId: string): Promise<UserRoleType> {
