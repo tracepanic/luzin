@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateSchoolSchema, SignupSchema } from "@/lib/schema";
-import { initializeLMS, isLmsInitialized } from "@/lib/server";
+import { initializeLMS, isLmsInitialized } from "@/server/init";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { handleAction } from "@repo/actionkit";
 import { MoveRight } from "lucide-react";
@@ -54,9 +54,9 @@ export default function Page() {
 
   useEffect(() => {
     (async function checkStatus() {
-      const { success, data } = await handleAction(isLmsInitialized);
+      const { error } = await handleAction(isLmsInitialized);
 
-      if (success && data) {
+      if (error) {
         toast.error("LMS already initialized");
         router.push("/");
         setLoading(false);

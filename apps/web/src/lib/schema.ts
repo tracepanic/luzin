@@ -15,3 +15,10 @@ export const LoginSchema = z.object({
   password: z.string().min(8).max(255),
   rememberMe: z.boolean(),
 });
+
+export const CreateAcademicYearSchema = z.object({
+  name: z.string().min(3).max(255),
+  startsAt: z.date(),
+  endsAt: z.date(),
+  isCurrent: z.boolean(),
+});

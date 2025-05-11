@@ -97,10 +97,31 @@ export class BadRequestException extends HttpException {
   }
 }
 
+export class UnauthorizedException extends HttpException {
+  constructor(message: string = "Unauthorized", error?: any) {
+    super(message, 401, error);
+    this.name = "UnauthorizedException";
+  }
+}
+
+export class ForbiddenException extends HttpException {
+  constructor(message: string = "Forbidden", error?: any) {
+    super(message, 403, error);
+    this.name = "ForbiddenException";
+  }
+}
+
 export class NotFoundException extends HttpException {
   constructor(message: string = "Not Found", error?: any) {
     super(message, 404, error);
     this.name = "NotFoundException";
+  }
+}
+
+export class ConflictException extends HttpException {
+  constructor(message: string = "Conflict", error?: any) {
+    super(message, 409, error);
+    this.name = "ConflictException";
   }
 }
 

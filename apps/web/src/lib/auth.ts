@@ -4,7 +4,8 @@ import { sessions } from "@/db/schema/sessions";
 import { users } from "@/db/schema/users";
 import { verifications } from "@/db/schema/verifications";
 import { sendVerificationEmail } from "@/emails";
-import { getUserRole } from "@/lib/server";
+import { getUserRole } from "@/server/user";
+import { handleAction } from "@repo/actionkit";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -51,13 +52,20 @@ export const auth = betterAuth({
   plugins: [
     customSession(async ({ user, session }) => {
       // Right now we read from DB, we will definately need a cache for this
-      const role = await getUserRole(user.id);
+      const { data, success } = await handleAction(getUserRole, user.id);
+
+      if (!success || !data) {
+        return {
+          session: null,
+          user: null,
+        };
+      }
 
       return {
         session,
         user: {
           ...user,
-          role,
+          role: data,
         },
       };
     }),

@@ -2,7 +2,13 @@ import { classInstances } from "@/db/schema/classes";
 import { timestamps } from "@/db/schema/timestamps";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 export const academicYears = pgTable(
   "academic_years",
@@ -11,6 +17,7 @@ export const academicYears = pgTable(
       .primaryKey()
       .$defaultFn(() => createId()),
     name: text("name").notNull().unique(),
+    isCurrent: boolean().notNull().default(false),
     startsAt: timestamp("starts_at", {
       mode: "date",
       withTimezone: true,

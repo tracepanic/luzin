@@ -1,4 +1,4 @@
-import { schools } from "@/db/schema/school";
+import { schools } from "@/db/schema/schools";
 import { timestamps } from "@/db/schema/timestamps";
 import { users } from "@/db/schema/users";
 import { createId } from "@paralleldrive/cuid2";

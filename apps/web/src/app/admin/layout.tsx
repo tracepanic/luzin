@@ -10,7 +10,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
     auth.api.getSession({ headers: await headers() }),
   ]);
 
-  if (!session) {
+  if (!session || !session.user) {
     toast.error("Login to access this page");
     redirect("/login");
     return;

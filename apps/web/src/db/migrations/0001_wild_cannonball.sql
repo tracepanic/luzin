@@ -88,6 +88,7 @@ CREATE TABLE "academic_years" (
 ALTER TABLE "class_instances" ADD CONSTRAINT "class_instances_academic_year_id_academic_years_id_fk" FOREIGN KEY ("academic_year_id") REFERENCES "public"."academic_years"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "class_instances" ADD CONSTRAINT "class_instances_class_id_classes_id_fk" FOREIGN KEY ("class_id") REFERENCES "public"."classes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "classes" ADD CONSTRAINT "classes_school_id_schools_id_fk" FOREIGN KEY ("school_id") REFERENCES "public"."schools"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schools" ADD CONSTRAINT "schools_name_unique" UNIQUE("name");
 ALTER TABLE "student_classes" ADD CONSTRAINT "student_classes_student_id_users_id_fk" FOREIGN KEY ("student_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "student_classes" ADD CONSTRAINT "student_classes_class_instance_id_class_instances_id_fk" FOREIGN KEY ("class_instance_id") REFERENCES "public"."class_instances"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "students" ADD CONSTRAINT "students_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -106,4 +107,3 @@ CREATE UNIQUE INDEX "subject_class_instance_idx" ON "subject_classes" USING btre
 CREATE UNIQUE INDEX "teacher_subject_class_idx" ON "teacher_subject_classes" USING btree ("teacher_id","subject_class_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "teacher_school_idx" ON "teachers" USING btree ("user_id","school_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "academic_year_dates_idx" ON "academic_years" USING btree ("starts_at","ends_at");--> statement-breakpoint
-ALTER TABLE "schools" ADD CONSTRAINT "schools_name_unique" UNIQUE("name");

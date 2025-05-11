@@ -2,13 +2,14 @@
 
 import { db } from "@/db";
 import { admins } from "@/db/schema/admins";
-import { schools } from "@/db/schema/school";
+import { schools } from "@/db/schema/schools";
 import { users } from "@/db/schema/users";
 import { auth } from "@/lib/auth";
 import { CreateSchoolSchema, SignupSchema } from "@/lib/schema";
 import { UserRole, UserRoleType } from "@/lib/types";
 import {
   BadRequestException,
+  ConflictException,
   InternalServerErrorException,
   NotFoundException,
 } from "@repo/actionkit";
@@ -29,7 +30,7 @@ export async function initializeLMS(
   ]);
 
   if (dbUser.length === 1 || dbSchool.length === 1) {
-    throw new BadRequestException("LMS is already initialized");
+    throw new ConflictException("LMS is already initialized");
   }
 
   const response = await auth.api.signUpEmail({
@@ -81,31 +82,13 @@ export async function initializeLMS(
   });
 }
 
-export async function isLmsInitialized(): Promise<boolean> {
+export async function isLmsInitialized() {
   const [dbUser, dbSchool] = await Promise.all([
     db.select().from(users).limit(1).execute(),
     db.select().from(schools).limit(1).execute(),
   ]);
 
-  if (dbUser.length === 1 || dbSchool.length === 1) {
-    return true;
+  if (dbUser.length !== 1 || dbSchool.length !== 1) {
+    throw new ConflictException("LMS already initialized");
   }
-
-  return false;
-}
-
-export async function getUserRole(userId: string): Promise<UserRoleType> {
-  const role = await db
-    .select({
-      role: users.role,
-    })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1);
-
-  if (role.length !== 1 || !role[0]?.role) {
-    throw new NotFoundException("User not found");
-  }
-
-  return role[0].role;
 }
