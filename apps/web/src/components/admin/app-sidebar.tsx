@@ -1,3 +1,4 @@
+import { NavMain } from "@/components/admin/nav-main";
 import { NavUser } from "@/components/admin/nav-user";
 import {
   Sidebar,
@@ -32,7 +33,9 @@ function AppSidebar({ user }: { user: User }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent></SidebarContent>
+      <SidebarContent>
+        <NavMain />
+      </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>
