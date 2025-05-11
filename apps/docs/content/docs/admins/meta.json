@@ -1,0 +1,7 @@
+{
+  "title": "Admin Docs",
+  "description": "Administrator documentation",
+  "icon": "UserCog",
+  "root": true,
+  "pages": ["---Getting Started---", "index"]
+}

@@ -1,3 +1,7 @@
 {
-  "pages": ["ui", "headless", "mdx", "cli", "openapi"]
+  "title": "Developer Docs",
+  "description": "Developer documentation",
+  "icon": "Server",
+  "root": true,
+  "pages": ["---Getting Started---", "index"]
 }
