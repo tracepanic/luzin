@@ -1,1 +1,1 @@
-# Learn Sphere Learning Management System
+# Luzin Learning Management System
