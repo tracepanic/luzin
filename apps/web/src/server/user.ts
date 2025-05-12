@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/db";
 import { users } from "@/db/schema/users";
 import { UserRoleType } from "@/lib/types";

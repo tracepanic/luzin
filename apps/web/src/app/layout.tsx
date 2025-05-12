@@ -1,11 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
-import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-});
 
 export default function Layout({
   children,
@@ -13,7 +8,7 @@ export default function Layout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         {children}
         <Toaster />

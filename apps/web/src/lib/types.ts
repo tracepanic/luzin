@@ -1,3 +1,5 @@
+import { academicYears } from "@/db/schema/years";
+import { InferSelectModel } from "drizzle-orm";
 import { LucideIcon } from "lucide-react";
 
 export const UserRole = {
@@ -7,6 +9,8 @@ export const UserRole = {
 } as const;
 
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
+
+export type AcademicYear = InferSelectModel<typeof academicYears>;
 
 export interface SidebarItem {
   title: string;
