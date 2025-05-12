@@ -25,8 +25,8 @@ const ITEMS: SidebarItem[] = [
     url: "/admin/academic-years",
     icon: CalendarClock,
     items: [
+      { title: "All Academic Years", url: "/admin/academic-years/all" },
       { title: "New Academic Year", url: "/admin/academic-years/new" },
-      { title: "Past Academic Years", url: "/admin/academic-years/past" },
     ],
   },
 ];
