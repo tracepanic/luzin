@@ -12,10 +12,10 @@ export const admins = pgTable("admins", {
   userId: text("user_id")
     .notNull()
     .unique()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
   schoolId: text("school_id")
     .notNull()
-    .references(() => schools.id, { onDelete: "cascade" }),
+    .references(() => schools.id, { onDelete: "cascade", onUpdate: "cascade" }),
   ...timestamps,
 });
 

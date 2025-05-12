@@ -16,7 +16,10 @@ export const classes = pgTable(
     name: text("name").notNull(),
     schoolId: text("school_id")
       .notNull()
-      .references(() => schools.id, { onDelete: "cascade" }),
+      .references(() => schools.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     ...timestamps,
   },
   (table) => [
@@ -32,10 +35,16 @@ export const classInstances = pgTable(
       .$defaultFn(() => createId()),
     academicYearId: text("academic_year_id")
       .notNull()
-      .references(() => academicYears.id, { onDelete: "cascade" }),
+      .references(() => academicYears.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     classId: text("class_id")
       .notNull()
-      .references(() => classes.id, { onDelete: "cascade" }),
+      .references(() => classes.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     ...timestamps,
   },
   (table) => [

@@ -8,7 +8,7 @@ const resend = new Resend(envServer.RESEND_API_KEY);
 export async function sendVerificationEmail(email: string, url: string) {
   await resend.emails.send({
     to: [email],
-    from: `Luzin Team <auth@${envClient.NEXT_PUBLIC_EMAIL_ADDRESS}>`,
+    from: `Luzin Team <auth@${envClient.NEXT_PUBLIC_EMAIL_DOMAIN}>`,
     subject: "Verify Your Email Address",
     react: VerificationEmailTemplate({ url }),
   });

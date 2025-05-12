@@ -15,10 +15,13 @@ export const teachers = pgTable(
     userId: text("user_id")
       .notNull()
       .unique()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     schoolId: text("school_id")
       .notNull()
-      .references(() => schools.id, { onDelete: "cascade" }),
+      .references(() => schools.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     ...timestamps,
   },
   (table) => [
@@ -34,10 +37,16 @@ export const teacherSubjectClasses = pgTable(
       .$defaultFn(() => createId()),
     teacherId: text("teacher_id")
       .notNull()
-      .references(() => teachers.id, { onDelete: "cascade" }),
+      .references(() => teachers.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     subjectClassId: text("subject_class_id")
       .notNull()
-      .references(() => subjectClasses.id, { onDelete: "cascade" }),
+      .references(() => subjectClasses.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     ...timestamps,
   },
   (table) => [

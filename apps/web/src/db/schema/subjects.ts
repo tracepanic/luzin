@@ -21,10 +21,16 @@ export const subjectClasses = pgTable(
       .$defaultFn(() => createId()),
     subjectId: text("subject_id")
       .notNull()
-      .references(() => subjects.id, { onDelete: "cascade" }),
+      .references(() => subjects.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     classInstanceId: text("class_instance_id")
       .notNull()
-      .references(() => classInstances.id, { onDelete: "cascade" }),
+      .references(() => classInstances.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     ...timestamps,
   },
   (table) => [
