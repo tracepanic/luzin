@@ -1,4 +1,6 @@
 import { classInstances } from "@/db/schema/classes";
+import { invites } from "@/db/schema/invites";
+import { students } from "@/db/schema/students";
 import { timestamps } from "@/db/schema/timestamps";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
@@ -34,5 +36,7 @@ export const academicYears = pgTable(
 );
 
 export const academicYearsRelations = relations(academicYears, ({ many }) => ({
+  students: many(students),
   classInstances: many(classInstances),
+  invites: many(invites),
 }));

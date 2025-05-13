@@ -1,12 +1,11 @@
+import { userRole } from "@/db/schema/_enums";
 import { accounts } from "@/db/schema/accounts";
 import { admins } from "@/db/schema/admins";
 import { sessions } from "@/db/schema/sessions";
 import { timestamps } from "@/db/schema/timestamps";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { boolean, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
-
-export const userRole = pgEnum("user_role", ["student", "teacher", "admin"]);
+import { boolean, pgTable, text } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: text("id")

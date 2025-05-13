@@ -29,6 +29,13 @@
       "when": 1747027096818,
       "tag": "0003_sleepy_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1747116864358,
+      "tag": "0004_greedy_chat",
+      "breakpoints": true
     }
   ]
 }

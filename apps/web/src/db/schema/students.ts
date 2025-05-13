@@ -2,6 +2,7 @@ import { classInstances } from "@/db/schema/classes";
 import { schools } from "@/db/schema/schools";
 import { timestamps } from "@/db/schema/timestamps";
 import { users } from "@/db/schema/users";
+import { academicYears } from "@/db/schema/years";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
@@ -22,10 +23,20 @@ export const students = pgTable(
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
+    academicYearId: text("academic_year_id")
+      .notNull()
+      .references(() => academicYears.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     ...timestamps,
   },
   (table) => [
-    uniqueIndex("student_school_idx").on(table.userId, table.schoolId),
+    uniqueIndex("student_school_year_idx").on(
+      table.userId,
+      table.schoolId,
+      table.academicYearId,
+    ),
   ],
 );
 
@@ -66,6 +77,10 @@ export const studentsRelations = relations(students, ({ one }) => ({
   school: one(schools, {
     fields: [students.schoolId],
     references: [schools.id],
+  }),
+  academicYear: one(academicYears, {
+    fields: [students.id],
+    references: [academicYears.id],
   }),
 }));
 
