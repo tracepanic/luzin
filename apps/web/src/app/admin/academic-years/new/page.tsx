@@ -62,8 +62,6 @@ export default function Page() {
       toast.success("Academic year created successfully");
       router.push("/admin/academic-years/all");
     }
-
-    toast.dismiss(id);
   };
 
   return (

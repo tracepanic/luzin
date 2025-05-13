@@ -12,7 +12,7 @@ import {
   NotFoundException,
 } from "@repo/actionkit";
 import { asc, eq } from "drizzle-orm";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 export async function createAcademicYear(
   values: z.infer<typeof CreateAcademicYearSchema>,
@@ -32,6 +32,10 @@ export async function createAcademicYear(
     }
   } catch (error) {
     if (error instanceof HttpException) {
+      throw error;
+    }
+
+    if (error instanceof ZodError) {
       throw error;
     }
 
@@ -67,6 +71,14 @@ export async function getCurrentAcademicYear(): Promise<AcademicYear> {
 
     return res[0];
   } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
+
+    if (error instanceof ZodError) {
+      throw error;
+    }
+
     throw new InternalServerErrorException(
       "Failed get current academic year",
       error,

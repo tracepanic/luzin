@@ -1,3 +1,4 @@
+import { userRole } from "@/db/schema/_enums";
 import { z } from "zod";
 
 export const SignupSchema = z.object({
@@ -22,3 +23,20 @@ export const CreateAcademicYearSchema = z.object({
   endsAt: z.date(),
   isCurrent: z.boolean(),
 });
+
+export const InviteUserSchema = z
+  .object({
+    email: z.string().email().min(5).max(255),
+    role: z.enum(userRole.enumValues),
+    academicYearId: z.string().optional(),
+    expiresAt: z.date(),
+  })
+  .refine(
+    (data) =>
+      data.role !== "student" ||
+      (data.role === "student" && data.academicYearId),
+    {
+      message: "Academic year is required for students",
+      path: ["academicYearId"],
+    },
+  );

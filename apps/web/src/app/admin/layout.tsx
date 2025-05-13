@@ -6,9 +6,7 @@ import type { ReactNode } from "react";
 import { toast } from "sonner";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const [session] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
-  ]);
+  const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session || !session.user) {
     toast.error("Login to access this page");

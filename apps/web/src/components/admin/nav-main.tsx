@@ -16,10 +16,15 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { SidebarItem } from "@/lib/types";
-import { CalendarClock, ChevronRight } from "lucide-react";
+import { CalendarClock, ChevronRight, House, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 const ITEMS: SidebarItem[] = [
+  {
+    title: "Dashboard",
+    url: "/admin",
+    icon: House,
+  },
   {
     title: "Academic Years",
     url: "/admin/academic-years",
@@ -28,6 +33,11 @@ const ITEMS: SidebarItem[] = [
       { title: "All Academic Years", url: "/admin/academic-years/all" },
       { title: "New Academic Year", url: "/admin/academic-years/new" },
     ],
+  },
+  {
+    title: "Invites",
+    url: "/admin/invites",
+    icon: UserPlus,
   },
 ];
 

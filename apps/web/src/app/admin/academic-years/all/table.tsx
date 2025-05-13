@@ -39,18 +39,20 @@ export const columns: ColumnDef<AcademicYear>[] = [
   {
     accessorKey: "startsAt",
     header: "Starting Date",
-    cell: ({ getValue }) =>
-      format(new Date(getValue() as string), "MMM d, yyyy"),
+    cell: ({ getValue }) => {
+      return format(new Date(getValue() as string), "MMM d, yyyy");
+    },
   },
   {
     accessorKey: "endsAt",
     header: "Ending Date",
-    cell: ({ getValue }) =>
-      format(new Date(getValue() as string), "MMM d, yyyy"),
+    cell: ({ getValue }) => {
+      return format(new Date(getValue() as string), "MMM d, yyyy");
+    },
   },
   {
     header: "Actions",
-    cell: ({ row }) => {
+    cell: () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger>

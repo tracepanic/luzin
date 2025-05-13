@@ -1,9 +1,15 @@
-import { VerificationEmailTemplate } from "@/emails/templates/verification-email";
+import {
+  InviteEmailTemplate,
+  VerificationEmailTemplate,
+} from "@/emails/templates/verification-email";
 import { env as envClient } from "@/env/client";
 import { env as envServer } from "@/env/server";
+import { Invite } from "@/lib/types";
 import { Resend } from "resend";
 
 const resend = new Resend(envServer.RESEND_API_KEY);
+
+// Look into the resend errors and give a meaningful error message
 
 export async function sendVerificationEmail(email: string, url: string) {
   await resend.emails.send({
@@ -12,6 +18,13 @@ export async function sendVerificationEmail(email: string, url: string) {
     subject: "Verify Your Email Address",
     react: VerificationEmailTemplate({ url }),
   });
+}
 
-  // Look into the resend errors and give a meaningful error message
+export async function sendInviteEmail(invite: Invite) {
+  await resend.emails.send({
+    to: [invite.email],
+    from: `Luzin Team <auth@${envClient.NEXT_PUBLIC_EMAIL_DOMAIN}>`,
+    subject: "Invitation to Join (__school__)",
+    react: InviteEmailTemplate({ invite }),
+  });
 }

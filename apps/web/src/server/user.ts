@@ -21,3 +21,5 @@ export async function getUserRole(userId: string): Promise<UserRoleType> {
 
   return role[0].role;
 }
+
+// Do throw catch
