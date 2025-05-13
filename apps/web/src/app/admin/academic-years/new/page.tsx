@@ -31,11 +31,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { handleAction } from "@repo/actionkit";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export default function Page() {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof CreateAcademicYearSchema>>({
     resolver: zodResolver(CreateAcademicYearSchema),
     defaultValues: {
@@ -57,7 +60,7 @@ export default function Page() {
     } else {
       toast.dismiss(id);
       toast.success("Academic year created successfully");
-      // Redirect user
+      router.push("/admin/academic-years/all");
     }
 
     toast.dismiss(id);
