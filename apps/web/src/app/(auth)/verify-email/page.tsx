@@ -1,11 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { MailWarning } from "lucide-react";
-
 import { Loader } from "@/components/custom/loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +9,11 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
+import { MailWarning } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const [cooldown, setCooldown] = useState(60);
@@ -24,14 +23,14 @@ export default function Page() {
   const { data, isPending, error } = authClient.useSession();
 
   useEffect(() => {
-    if (!isPending && (!data || error)) {
+    if (!isPending && (!data || error || !data.user)) {
       toast.error("Login to access this page");
       router.push("/login");
     }
   }, [data, error, isPending, router]);
 
   useEffect(() => {
-    if (!isPending && data?.user.emailVerified) {
+    if (!isPending && data?.user!.emailVerified) {
       toast.error("Email already verified");
       router.push("/email-verification-successful");
     }
@@ -47,7 +46,7 @@ export default function Page() {
     return () => clearInterval(interval);
   }, [cooldown]);
 
-  if (isPending || !data || error || data.user.emailVerified) {
+  if (isPending || !data || error || data.user!.emailVerified) {
     return <Loader />;
   }
 
@@ -59,7 +58,7 @@ export default function Page() {
 
     setIsSending(true);
     await authClient.sendVerificationEmail({
-      email: data.user.email,
+      email: data.user!.email,
       callbackURL: "/email-verification-successful",
     });
 
@@ -82,7 +81,7 @@ export default function Page() {
         <div className="space-y-2 text-slate-700">
           <p className="text-lg">
             We&apos;ve sent a verification link to your email address (
-            <span className="underline">{data.user.email}</span>). Please check
+            <span className="underline">{data.user!.email}</span>). Please check
             your inbox and click on the verification link to activate your
             account.
           </p>

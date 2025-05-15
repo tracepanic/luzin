@@ -12,9 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { AcademicYear } from "@/lib/types";
 import { getAcademicYears, getCurrentAcademicYear } from "@/server/year";
-import { handleAction } from "@repo/actionkit";
+import { useQueries } from "@tanstack/react-query";
 import {
   differenceInCalendarDays,
   format,
@@ -24,31 +23,28 @@ import {
 } from "date-fns";
 import { CalendarClock, CalendarRange, Edit, PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function Page() {
-  const [loading, setLoading] = useState(true);
-  const [years, setYears] = useState<AcademicYear[]>([]);
-  const [current, setCurrent] = useState<AcademicYear | null>(null);
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ["academic-years"],
+        queryFn: getAcademicYears,
+        meta: { showError: true },
+      },
+      {
+        queryKey: ["current-academic-year"],
+        queryFn: getCurrentAcademicYear,
+        meta: { showError: true },
+      },
+    ],
+  });
 
-  useEffect(() => {
-    (async function loadData() {
-      const [years, current] = await Promise.all([
-        handleAction(getAcademicYears),
-        handleAction(getCurrentAcademicYear),
-      ]);
+  const [yearsResult, currentYearResult] = results;
 
-      if (years.success) {
-        setYears(years.data ?? []);
-      }
-
-      if (current.success && current.data) {
-        setCurrent(current.data);
-      }
-
-      setLoading(false);
-    })();
-  }, []);
+  const years = yearsResult.data ?? [];
+  const currentYear = currentYearResult.data ?? null;
+  const isPending = results.some((r) => r.isPending);
 
   const calculateProgress = (startDate: string, endDate: string): number => {
     const start = parseISO(startDate);
@@ -83,11 +79,11 @@ export default function Page() {
     return differenceInCalendarDays(now, start);
   };
 
-  if (loading) {
+  if (isPending) {
     return <Loader />;
   }
 
-  if (!loading && !current && years.length < 1) {
+  if (!isPending && !currentYear && years.length < 1) {
     return (
       <div className="max-w-3xl mt-10 container">
         <Card className="border-dashed">
@@ -113,7 +109,7 @@ export default function Page() {
     );
   }
 
-  if (!loading && !current && years.length >= 1) {
+  if (!isPending && !currentYear && years.length >= 1) {
     return (
       <div className="max-w-3xl mt-10 container">
         <Alert className="bg-warning/10 border-warning">
@@ -143,20 +139,20 @@ export default function Page() {
   return (
     <div className="container">
       <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-        Academic Year ({current!.name})
+        Academic Year ({currentYear!.name})
       </h1>
       <p className="text-muted-foreground mt-1">
         <span className="inline-flex items-center">
           <CalendarRange className="mr-1 h-4 w-4" />
-          {format(new Date(current!.startsAt), "MMMM d, yyyy")} -{" "}
-          {format(new Date(current!.endsAt), "MMMM d, yyyy")}
+          {format(new Date(currentYear!.startsAt), "MMMM d, yyyy")} -{" "}
+          {format(new Date(currentYear!.endsAt), "MMMM d, yyyy")}
         </span>
       </p>
       <div className="flex items-center gap-3 mt-5">
         <Badge className={buttonVariants({ variant: "default" })}>ACTIVE</Badge>
         <Link
           className={buttonVariants({ variant: "outline" })}
-          href={`/admin/academic-years/edit/${current!.id}`}
+          href={`/admin/academic-years/edit/${currentYear!.id}`}
         >
           <Edit className="mr-2 h-4 w-4" />
           Edit
@@ -173,21 +169,21 @@ export default function Page() {
           <CardContent>
             <div className="text-2xl font-bold">
               {calculateProgress(
-                current!.startsAt.toISOString(),
-                current!.endsAt.toISOString(),
+                currentYear!.startsAt.toISOString(),
+                currentYear!.endsAt.toISOString(),
               )}
               %
             </div>
             <Progress
               value={calculateProgress(
-                current!.startsAt.toISOString(),
-                current!.endsAt.toISOString(),
+                currentYear!.startsAt.toISOString(),
+                currentYear!.endsAt.toISOString(),
               )}
               className="h-2 mt-2 mb-1"
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-2">
-              <span>{format(current!.startsAt, "MMM d, yyyy")}</span>
-              <span>{format(current!.endsAt, "MMM d, yyyy")}</span>
+              <span>{format(currentYear!.startsAt, "MMM d, yyyy")}</span>
+              <span>{format(currentYear!.endsAt, "MMM d, yyyy")}</span>
             </div>
           </CardContent>
         </Card>
@@ -202,19 +198,22 @@ export default function Page() {
             <div className="flex justify-between items-center">
               <span className="text-sm">Elapsed</span>
               <span className="font-medium">
-                {getElapsedDays(current!.startsAt.toISOString())} days
+                {getElapsedDays(currentYear!.startsAt.toISOString())} days
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm">Remaining</span>
               <span className="font-medium">
-                {getRemainingDays(current!.endsAt.toISOString())} days
+                {getRemainingDays(currentYear!.endsAt.toISOString())} days
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm">Total Duration</span>
               <span className="font-medium">
-                {differenceInCalendarDays(current!.endsAt, current!.startsAt)}{" "}
+                {differenceInCalendarDays(
+                  currentYear!.endsAt,
+                  currentYear!.startsAt,
+                )}{" "}
                 days
               </span>
             </div>

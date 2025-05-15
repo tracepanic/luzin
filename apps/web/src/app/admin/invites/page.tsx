@@ -41,12 +41,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { InviteUserSchema } from "@/lib/schema";
-import { AcademicYear, Invite } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { adminGetInvites, adminInviteUser } from "@/server/invites";
 import { getAcademicYears } from "@/server/year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { handleAction } from "@repo/actionkit";
+import { useMutation, useQueries } from "@tanstack/react-query";
 import {
   flexRender,
   getCoreRowModel,
@@ -54,38 +53,43 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { CalendarIcon, UserPlus } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export default function Page() {
-  const [loading, setLoading] = useState(true);
-  const [years, setYears] = useState<AcademicYear[]>([]);
-  const [invites, setInvites] = useState<Invite[]>([]);
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ["academic-years"],
+        queryFn: getAcademicYears,
+        meta: { showError: true },
+      },
+      {
+        queryKey: ["admin-invites"],
+        queryFn: adminGetInvites,
+        meta: { showError: true },
+      },
+    ],
+  });
 
-  useEffect(() => {
-    (async function loadData() {
-      const [years, invites] = await Promise.all([
-        handleAction(getAcademicYears),
-        handleAction(adminGetInvites),
-      ]);
+  const [yearsResult, invitesResult] = results;
 
-      if (years.success) {
-        setYears(years.data ?? []);
-      } else {
-        toast.error(years.message);
-      }
+  const years = yearsResult.data ?? [];
+  const invites = invitesResult.data ?? [];
+  const isInitialPending = results.some((r) => r.isPending);
 
-      if (invites.success) {
-        setInvites(invites.data ?? []);
-      } else {
-        toast.error(invites.message);
-      }
-
-      setLoading(false);
-    })();
-  }, []);
+  const { mutate, isPending } = useMutation({
+    mutationFn: adminInviteUser,
+    onSuccess: () => {
+      toast.dismiss();
+      toast.success("Invite sent successfully");
+    },
+    onError: (error) => {
+      toast.dismiss();
+      toast.error(error.message || "Failed to send invite");
+    },
+  });
 
   const form = useForm<z.infer<typeof InviteUserSchema>>({
     resolver: zodResolver(InviteUserSchema),
@@ -98,19 +102,8 @@ export default function Page() {
   });
 
   const onSubmit = async (values: z.infer<typeof InviteUserSchema>) => {
-    const id = toast.loading("Sending user invite...");
-
-    const { success, message } = await handleAction(adminInviteUser, values);
-
-    if (success) {
-      form.reset();
-      toast.dismiss(id);
-      toast.success("User invite sent successfully");
-    } else {
-      form.reset();
-      toast.dismiss(id);
-      toast.error(message);
-    }
+    mutate(values);
+    toast.loading("Sending invite...");
   };
 
   const table = useReactTable({
@@ -119,7 +112,7 @@ export default function Page() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (loading) {
+  if (isInitialPending) {
     return <Loader />;
   }
 
@@ -292,7 +285,7 @@ export default function Page() {
               ))}
             </TableHeader>
             <TableBody>
-              {isPending ? (
+              {isInitialPending ? (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="min-h-32">
                     <Loader />

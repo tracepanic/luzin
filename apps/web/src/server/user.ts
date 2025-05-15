@@ -3,11 +3,6 @@
 import { db } from "@/db";
 import { users } from "@/db/schema/users";
 import { UserRoleType } from "@/lib/types";
-import {
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-} from "@repo/actionkit";
 import { eq } from "drizzle-orm";
 
 export async function getUserRole(userId: string): Promise<UserRoleType> {
@@ -21,15 +16,15 @@ export async function getUserRole(userId: string): Promise<UserRoleType> {
       .limit(1);
 
     if (role.length !== 1 || !role[0]?.role) {
-      throw new NotFoundException("User not found");
+      throw new Error("User not found");
     }
 
     return role[0].role;
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    throw new InternalServerErrorException("User not found", error);
+    throw new Error("User not found");
   }
 }

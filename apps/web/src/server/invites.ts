@@ -7,13 +7,8 @@ import { InviteUserSchema } from "@/lib/schema";
 import { Invite } from "@/lib/types";
 import { validateUserIsAdmin } from "@/server/common";
 import { createId } from "@paralleldrive/cuid2";
-import {
-  BadRequestException,
-  HttpException,
-  InternalServerErrorException,
-} from "@repo/actionkit";
 import { asc } from "drizzle-orm";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 
 export async function adminInviteUser(
   values: z.infer<typeof InviteUserSchema>,
@@ -31,20 +26,16 @@ export async function adminInviteUser(
       .returning();
 
     if (res.length !== 1 || !res[0]) {
-      throw new BadRequestException("Failed to send invite");
+      throw new Error("Failed to send invite");
     }
 
     await sendInviteEmail(res[0]);
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    if (error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException("Failed to send invite", error);
+    throw new Error("Failed to send invite");
   }
 }
 
@@ -54,10 +45,10 @@ export async function adminGetInvites(): Promise<Invite[]> {
 
     return db.select().from(invites).orderBy(asc(invites.createdAt));
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    throw new InternalServerErrorException("Failed get academic years", error);
+    throw new Error("Failed get academic years");
   }
 }

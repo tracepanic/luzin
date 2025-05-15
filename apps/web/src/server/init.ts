@@ -6,22 +6,17 @@ import { schools } from "@/db/schema/schools";
 import { users } from "@/db/schema/users";
 import { auth } from "@/lib/auth";
 import { CreateSchoolSchema, SignupSchema } from "@/lib/schema";
-import { UserRole, UserRoleType } from "@/lib/types";
-import {
-  BadRequestException,
-  ConflictException,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-} from "@repo/actionkit";
-import { eq } from "drizzle-orm";
+import { UserRole } from "@/lib/types";
 import { headers } from "next/headers";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 
-export async function initializeLMS(
-  user: z.infer<typeof SignupSchema>,
-  school: z.infer<typeof CreateSchoolSchema>,
-) {
+export async function initializeLMS({
+  user,
+  school,
+}: {
+  user: z.infer<typeof SignupSchema>;
+  school: z.infer<typeof CreateSchoolSchema>;
+}) {
   try {
     const validUser = SignupSchema.parse(user);
     const validSchool = CreateSchoolSchema.parse(school);
@@ -32,7 +27,7 @@ export async function initializeLMS(
     ]);
 
     if (dbUser.length === 1 || dbSchool.length === 1) {
-      throw new ConflictException("LMS is already initialized");
+      throw new Error("LMS is already initialized");
     }
 
     const response = await auth.api.signUpEmail({
@@ -46,7 +41,7 @@ export async function initializeLMS(
     });
 
     if (!response.user.id) {
-      throw new BadRequestException("Failed to create user");
+      throw new Error("Failed to create user");
     }
 
     try {
@@ -57,7 +52,7 @@ export async function initializeLMS(
           .returning({ id: schools.id });
 
         if (scholId.length !== 1 || !scholId[0]?.id) {
-          throw new BadRequestException("Failed to create school");
+          throw new Error("Failed to create school");
         }
 
         const adminId = await tx
@@ -66,13 +61,13 @@ export async function initializeLMS(
           .returning({ id: admins.id });
 
         if (adminId.length !== 1 || !adminId[0]?.id) {
-          throw new BadRequestException("Failed to create admin");
+          throw new Error("Failed to create admin");
         }
       });
     } catch (error) {
       // Delete user created by better auth if this fails
 
-      throw new InternalServerErrorException("Failed to initialize LMS", error);
+      throw new Error("Failed to initialize LMS");
     }
 
     await auth.api.sendVerificationEmail({
@@ -83,19 +78,15 @@ export async function initializeLMS(
       },
     });
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    if (error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException("Failed to initialize LMS", error);
+    throw new Error("Failed to initialize LMS");
   }
 }
 
-export async function isLmsInitialized() {
+export async function isLmsInitialized(): Promise<boolean> {
   try {
     const [dbUser, dbSchool] = await Promise.all([
       db.select().from(users).limit(1).execute(),
@@ -103,13 +94,15 @@ export async function isLmsInitialized() {
     ]);
 
     if (dbUser.length !== 1 || dbSchool.length !== 1) {
-      throw new ConflictException("LMS already initialized");
+      throw new Error("LMS already initialized");
     }
+
+    return true;
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    throw new InternalServerErrorException("Failed to get LMS status", error);
+    throw new Error("Failed to get LMS status");
   }
 }

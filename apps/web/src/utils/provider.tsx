@@ -8,7 +8,7 @@ import {
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (query.meta?.showError) {

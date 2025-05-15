@@ -22,7 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateSchoolSchema, SignupSchema } from "@/lib/schema";
 import { initializeLMS, isLmsInitialized } from "@/server/init";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { handleAction } from "@repo/actionkit";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { MoveRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,10 +31,41 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 export default function Page() {
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("user");
 
   const router = useRouter();
+
+  const {
+    data,
+    isSuccess,
+    isPending: isInitialPending,
+  } = useQuery({
+    queryKey: ["lms-initialization"],
+    queryFn: isLmsInitialized,
+    meta: { showError: true },
+  });
+
+  useEffect(() => {
+    if (isSuccess && data === true) {
+      toast.error("LMS already initialized");
+      router.push("/");
+    }
+  }, [isSuccess, data]);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: initializeLMS,
+    onSuccess: () => {
+      toast.dismiss();
+      toast.success("LMS initialised successfully");
+      router.push("/verify-email");
+    },
+    onError: (error) => {
+      toast.dismiss();
+      toast.error(error.message || "Failed to initialize LMS");
+      userForm.reset();
+      schoolForm.reset();
+    },
+  });
 
   const userForm = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
@@ -52,21 +83,6 @@ export default function Page() {
     },
   });
 
-  useEffect(() => {
-    (async function checkStatus() {
-      const { error } = await handleAction(isLmsInitialized);
-
-      if (error) {
-        toast.error("LMS already initialized");
-        router.push("/");
-        setLoading(false);
-        return;
-      } else {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
   const onUserSubmit = () => {
     setActiveTab("school");
   };
@@ -78,26 +94,11 @@ export default function Page() {
       password: userForm.getValues("password"),
     };
 
-    const id = toast.loading("Initializing LMS...");
-    const { success, message } = await handleAction(
-      initializeLMS,
-      user,
-      values,
-    );
-
-    toast.dismiss(id);
-    if (success) {
-      toast.success("LMS initialised successfully");
-      router.push("/verify-email");
-    } else {
-      toast.error(message);
-      setActiveTab("user");
-      userForm.reset();
-      schoolForm.reset();
-    }
+    mutate({ user, school: values });
+    toast.loading("Initializing LMS...");
   };
 
-  if (loading) {
+  if (isInitialPending) {
     return <Loader />;
   }
 

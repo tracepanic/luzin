@@ -1,6 +1,5 @@
 "use client";
 
-import { DateTimePicker } from "@/components/custom/date-time";
 import { Loader } from "@/components/custom/loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,39 +26,50 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { AcademicYear } from "@/lib/types";
 import { CreateEventSchema } from "@/schemas/events";
 import { adminCreateNewEvent } from "@/server/events";
 import { getAcademicYears } from "@/server/year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { handleAction } from "@repo/actionkit";
-import { useEffect, useState } from "react";
+import { useMutation, useQueries } from "@tanstack/react-query";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { rrulestr } from "rrule";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export default function Page() {
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("info");
-  const [years, setYears] = useState<AcademicYear[]>([]);
 
-  useEffect(() => {
-    (async function loadData() {
-      const [years] = await Promise.all([handleAction(getAcademicYears)]);
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ["academic-years"],
+        queryFn: getAcademicYears,
+        meta: { showError: true },
+      },
+    ],
+  });
 
-      if (years.success) {
-        setYears(years.data ?? []);
-      } else {
-        toast.error(years.message);
-      }
+  const { mutate, isPending } = useMutation({
+    mutationFn: adminCreateNewEvent,
+    onSuccess: () => {
+      toast.dismiss();
+      toast.success("Event created successfully");
+      // Redirect
+    },
+    onError: (error) => {
+      toast.dismiss();
+      toast.error(error.message || "Failed to create event");
+      // Reset form
+    },
+  });
 
-      setLoading(false);
-    })();
-  }, []);
+  const [yearsResult] = results;
+
+  const years = yearsResult.data ?? [];
+  const isInitialPending = results.some((r) => r.isPending);
 
   const form = useForm<z.infer<typeof CreateEventSchema>>({
     resolver: zodResolver(CreateEventSchema),
@@ -77,20 +87,8 @@ export default function Page() {
   });
 
   const onSubmit = async (values: z.infer<typeof CreateEventSchema>) => {
-    const id = toast.loading("Creating event...");
-
-    const { success, message } = await handleAction(
-      adminCreateNewEvent,
-      values,
-    );
-
-    if (!success) {
-      toast.dismiss(id);
-      toast.error(message);
-    } else {
-      toast.dismiss(id);
-      toast.success("Event created successfully");
-    }
+    mutate(values);
+    toast.loading("Creating event...");
   };
 
   function handleParseRrule() {
@@ -116,7 +114,7 @@ export default function Page() {
     toast.success("Rule is valid");
   }
 
-  if (loading) {
+  if (isInitialPending) {
     return <Loader />;
   }
 
@@ -287,7 +285,7 @@ export default function Page() {
 
                 <Button
                   type="submit"
-                  disabled={form.formState.isSubmitting}
+                  disabled={isPending}
                   className="w-full max-w-lg mt-5"
                 >
                   Continue

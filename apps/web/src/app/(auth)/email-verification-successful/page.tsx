@@ -19,14 +19,14 @@ export default function Page() {
   const { data, isPending, error } = authClient.useSession();
 
   useEffect(() => {
-    if (!isPending && (!data || error)) {
+    if (!isPending && (!data || error || !data.user)) {
       toast.error("Login to access this page");
       router.push("/login");
     }
   }, [data, error, isPending, router]);
 
   useEffect(() => {
-    if (!isPending && !data?.user.emailVerified) {
+    if (!isPending && !data?.user!.emailVerified) {
       toast.error("Email not verified yet");
       router.push("/verify-email");
     }

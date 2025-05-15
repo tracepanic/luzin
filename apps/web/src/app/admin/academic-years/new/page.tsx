@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { CreateAcademicYearSchema } from "@/lib/schema";
 import { createAcademicYear } from "@/server/year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { handleAction } from "@repo/actionkit";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,6 +30,20 @@ import { z } from "zod";
 
 export default function Page() {
   const router = useRouter();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createAcademicYear,
+    onSuccess: () => {
+      toast.dismiss();
+      toast.success("Academic year created successfully");
+      router.push("/admin/academic-years/all");
+    },
+    onError: (error) => {
+      toast.dismiss();
+      toast.error(error.message || "Failed to create academic year");
+      form.reset();
+    },
+  });
 
   const form = useForm<z.infer<typeof CreateAcademicYearSchema>>({
     resolver: zodResolver(CreateAcademicYearSchema),
@@ -41,19 +55,9 @@ export default function Page() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof CreateAcademicYearSchema>) => {
-    const id = toast.loading("Creating academic year...");
-
-    const { success, message } = await handleAction(createAcademicYear, values);
-
-    if (!success) {
-      toast.dismiss(id);
-      toast.error(message);
-    } else {
-      toast.dismiss(id);
-      toast.success("Academic year created successfully");
-      router.push("/admin/academic-years/all");
-    }
+  const onSubmit = (values: z.infer<typeof CreateAcademicYearSchema>) => {
+    mutate(values);
+    toast.loading("Creating academic year...");
   };
 
   return (
@@ -138,11 +142,7 @@ export default function Page() {
               )}
             />
 
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              className="w-full mt-5"
-            >
+            <Button type="submit" disabled={isPending} className="w-full mt-5">
               Create Academic Year
             </Button>
           </form>

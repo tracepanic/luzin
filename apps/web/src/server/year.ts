@@ -35,8 +35,6 @@ export async function createAcademicYear(
 
 export async function getAcademicYears(): Promise<AcademicYear[]> {
   try {
-    throw new Error("Failed to create academic year");
-
     return db
       .select()
       .from(academicYears)

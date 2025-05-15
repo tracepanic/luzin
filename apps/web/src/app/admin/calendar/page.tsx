@@ -27,11 +27,9 @@ import {
 } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import FullCalendar from "@fullcalendar/react";
-import rrulePlugin from "@fullcalendar/rrule";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { handleAction } from "@repo/actionkit";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function Page() {
@@ -40,18 +38,21 @@ export default function Page() {
   const { calendarEvents, updateEvents, currentView, updateCurrentView } =
     useAdminCalendarStore();
 
-  useEffect(() => {
-    (async function loadData() {
-      const { success, data } = await handleAction(adminGetEvents);
+  const { data, isSuccess, isFetching } = useQuery({
+    queryKey: ["admin-events"],
+    queryFn: adminGetEvents,
+    meta: { showError: true },
+    refetchInterval: 30000,
+  });
 
-      if (success) {
-        updateEvents(data ?? []);
-      }
-    })();
-  }, []);
+  useEffect(() => {
+    if (isSuccess && data) {
+      updateEvents(data);
+    }
+  }, [isSuccess, data, updateEvents]);
 
   const handleEventClick = (info: EventClickArg) => {
-    console.log("hhh");
+    console.log("Clicked");
   };
 
   function updateCalendarCurrentView(type: CurrentCalendarViewType) {
@@ -200,6 +201,10 @@ export default function Page() {
                 </Tooltip>
               </TooltipProvider>
             </div>
+
+            {isFetching && (
+              <RefreshCw className="animate-spin text-muted-foreground" />
+            )}
           </div>
           <div>
             <Select

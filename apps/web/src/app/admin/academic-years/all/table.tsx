@@ -32,7 +32,7 @@ export const columns: ColumnDef<AcademicYear>[] = [
       } else if (isAfter(startsAt, now)) {
         return <Badge variant="outline">FUTURE</Badge>;
       } else {
-        return <Badge>CURRENT</Badge>;
+        return <Badge variant="outline">ONGOING</Badge>;
       }
     },
   },

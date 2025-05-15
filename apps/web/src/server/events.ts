@@ -6,15 +6,9 @@ import { schools } from "@/db/schema/schools";
 import { Event } from "@/lib/types";
 import { CreateEventSchema } from "@/schemas/events";
 import { validateUserIsAdmin } from "@/server/common";
-import {
-  BadRequestException,
-  handleAction,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-} from "@repo/actionkit";
+import { queryClient } from "@/utils/provider";
 import { rrulestr } from "rrule";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 
 export async function adminCreateNewEvent(
   values: z.infer<typeof CreateEventSchema>,
@@ -26,30 +20,25 @@ export async function adminCreateNewEvent(
       const rule = rrulestr(data.rrule);
 
       if (!rule) {
-        throw new BadRequestException("Failed to parse rrule");
+        throw new Error("Failed to parse rrule");
       }
     } catch (error) {
-      throw new BadRequestException("Failed to parse rrule");
+      throw new Error("Failed to parse rrule");
     }
 
-    const {
-      success,
-      data: user,
-      error,
-    } = await handleAction(validateUserIsAdmin);
+    const user = await queryClient.fetchQuery({
+      queryKey: ["is-user-an-admin"],
+      queryFn: validateUserIsAdmin,
+    });
 
-    if (!success || !user) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new NotFoundException("User not found");
+    if (!user) {
+      throw new Error("User not found");
     }
 
     const school = await db.select().from(schools).limit(1);
 
     if (school.length !== 1 || !school[0]?.id) {
-      throw new BadRequestException("School not found");
+      throw new Error("School not found");
     }
 
     const res = await db
@@ -70,25 +59,21 @@ export async function adminCreateNewEvent(
       .returning({ id: events.id });
 
     if (res.length !== 1 || !res[0]?.id) {
-      throw new BadRequestException("Failed to create event");
+      throw new Error("Failed to create event");
     }
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    if (error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException("Failed to create event", error);
+    throw new Error("Failed to create event");
   }
 }
 
 export async function adminGetEvents(): Promise<Event[]> {
   try {
     return db.select().from(events);
-  } catch (error) {
-    throw new InternalServerErrorException("Failed get events", error);
+  } catch {
+    throw new Error("Failed get events");
   }
 }
