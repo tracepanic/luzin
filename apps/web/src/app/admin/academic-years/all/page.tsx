@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { columns } from "@/app/admin/academic-years/all/table";
-import { useEffect, useState } from "react";
-import { AcademicYear } from "@/lib/types";
-import Link from "next/link";
+import { Loader } from "@/components/custom/loader";
 import { buttonVariants } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -20,32 +12,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { handleAction } from "@repo/actionkit";
 import { getAcademicYears } from "@/server/year";
-import { toast } from "sonner";
-import { Loader } from "@/components/custom/loader";
+import { useQuery } from "@tanstack/react-query";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
 export default function Page() {
-  const [loading, setLoading] = useState(true);
-  const [years, setYears] = useState<AcademicYear[]>([]);
-
-  useEffect(() => {
-    (async function loadData() {
-      const { success, data, message } = await handleAction(getAcademicYears);
-
-      if (success) {
-        setYears(data ?? []);
-      } else {
-        toast.error(message);
-      }
-
-      setLoading(false);
-    })();
-  }, []);
+  const { isPending, data } = useQuery({
+    queryKey: ["academic-years"],
+    queryFn: getAcademicYears,
+    meta: { showError: true },
+  });
 
   const table = useReactTable({
     columns,
-    data: years,
+    data: data ?? [],
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -60,7 +46,6 @@ export default function Page() {
           <Plus className="mr-2 h-4 w-4" /> New Academic Year
         </Link>
       </div>
-
       <Card className="mt-10">
         <CardContent>
           <Table>
@@ -84,14 +69,26 @@ export default function Page() {
               ))}
             </TableHeader>
             <TableBody>
-              {loading && (
+              {isPending ? (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="min-h-32">
                     <Loader />
                   </TableCell>
                 </TableRow>
-              )}
-              {!loading && table.getRowModel().rows?.length < 1 && (
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
@@ -100,22 +97,6 @@ export default function Page() {
                     No academic years found.
                   </TableCell>
                 </TableRow>
-              )}
-              {!loading && table.getRowModel().rows?.length && (
-                <>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </>
               )}
             </TableBody>
           </Table>

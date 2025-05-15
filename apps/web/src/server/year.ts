@@ -5,14 +5,8 @@ import { academicYears } from "@/db/schema/years";
 import { CreateAcademicYearSchema } from "@/lib/schema";
 import { AcademicYear } from "@/lib/types";
 import { validateUserIsAdmin } from "@/server/common";
-import {
-  BadRequestException,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-} from "@repo/actionkit";
 import { asc, eq } from "drizzle-orm";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 
 export async function createAcademicYear(
   values: z.infer<typeof CreateAcademicYearSchema>,
@@ -28,32 +22,31 @@ export async function createAcademicYear(
       .returning({ id: academicYears.id });
 
     if (res.length !== 1 || !res[0]?.id) {
-      throw new BadRequestException("Failed to create academic year");
+      throw new Error("Failed to create academic year");
     }
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    if (error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException(
-      "Failed to create academic year",
-      error,
-    );
+    throw new Error("Failed to create academic year");
   }
 }
 
 export async function getAcademicYears(): Promise<AcademicYear[]> {
   try {
+    throw new Error("Failed to create academic year");
+
     return db
       .select()
       .from(academicYears)
       .orderBy(asc(academicYears.createdAt));
   } catch (error) {
-    throw new InternalServerErrorException("Failed get academic years", error);
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error("Failed get academic years");
   }
 }
 
@@ -66,22 +59,15 @@ export async function getCurrentAcademicYear(): Promise<AcademicYear> {
       .limit(1);
 
     if (res.length !== 1 || !res[0]) {
-      throw new NotFoundException("No current academic year found");
+      throw new Error("No current academic year found");
     }
 
     return res[0];
   } catch (error) {
-    if (error instanceof HttpException) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    if (error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException(
-      "Failed get current academic year",
-      error,
-    );
+    throw new Error("Failed get current academic year");
   }
 }

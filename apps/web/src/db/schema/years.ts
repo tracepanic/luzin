@@ -1,4 +1,5 @@
 import { classInstances } from "@/db/schema/classes";
+import { events } from "@/db/schema/events";
 import { invites } from "@/db/schema/invites";
 import { students } from "@/db/schema/students";
 import { timestamps } from "@/db/schema/timestamps";
@@ -39,4 +40,5 @@ export const academicYearsRelations = relations(academicYears, ({ many }) => ({
   students: many(students),
   classInstances: many(classInstances),
   invites: many(invites),
+  events: many(events),
 }));

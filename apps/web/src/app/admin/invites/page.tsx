@@ -292,7 +292,26 @@ export default function Page() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length < 1 && (
+              {isPending ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="min-h-32">
+                    <Loader />
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
@@ -301,22 +320,6 @@ export default function Page() {
                     No invites found.
                   </TableCell>
                 </TableRow>
-              )}
-              {table.getRowModel().rows?.length && (
-                <>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </>
               )}
             </TableBody>
           </Table>

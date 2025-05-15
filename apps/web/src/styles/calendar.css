@@ -1,0 +1,117 @@
+.fc-scrollgrid {
+  border-radius: 3px !important;
+}
+
+.fc tbody tr:last-child td:first-child {
+  border-radius: 3px !important;
+}
+
+.fc tbody tr:last-child td:last-child {
+  border-radius: 3px !important;
+}
+
+.fc-theme-standard th {
+  border-radius: 3px !important;
+}
+
+.fc-col-header-cell-cushion {
+  display: flex !important;
+  height: 56px;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.fc-timegrid-slot {
+  height: 30px !important;
+}
+
+.fc-timegrid-slot-label-cushion {
+  font-weight: 300 !important;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+td.fc-daygrid-day.fc-day.fc-day-today {
+  background-color: var(--border) !important;
+}
+
+.fc-day-today {
+  background-color: inherit !important;
+}
+
+.fc-day-other {
+  background-color: var(--muted) !important;
+}
+
+.fc-daygrid-day-top {
+  display: flex !important;
+  flex-direction: row !important;
+  height: 32px !important;
+  width: 100% !important;
+  align-items: center !important;
+  padding-left: 5px !important;
+}
+
+.fc-daygrid-dot-event:hover {
+  background: none !important;
+}
+
+.fc-daygrid-event-harness {
+  padding-right: 8px !important;
+  transition: all !important;
+}
+
+.fc-daygrid-event-harness:hover {
+  background: none !important;
+  scale: 1 !important;
+  cursor: pointer !important;
+}
+
+.fc-timegrid-event-harness {
+  background: none !important;
+  cursor: pointer !important;
+}
+
+.fc-event-main {
+  display: flex !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: none !important;
+}
+
+.fc-event {
+  display: flex !important;
+  border: none !important;
+  min-width: 100% !important;
+}
+
+.fc-daygrid-event {
+  margin-inline: 4px !important;
+}
+
+.fc-timegrid-event {
+  padding-inline: 4px !important;
+  background: none !important;
+}
+
+td.fc-daygrid-day.fc-day {
+  pointer-events: none !important;
+}
+
+.fc-event {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
+.fc-daygrid-event-harness {
+  pointer-events: all !important;
+}
+
+.fc-daygrid-day-top {
+  pointer-events: none !important;
+}
+
+.fc-scroller {
+  overflow: auto !important;
+}

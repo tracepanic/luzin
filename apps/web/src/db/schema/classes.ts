@@ -1,3 +1,4 @@
+import { events } from "@/db/schema/events";
 import { schools } from "@/db/schema/schools";
 import { studentClasses } from "@/db/schema/students";
 import { subjectClasses } from "@/db/schema/subjects";
@@ -76,5 +77,6 @@ export const classInstancesRelations = relations(
     }),
     students: many(studentClasses),
     subjects: many(subjectClasses),
+    events: many(events),
   }),
 );

@@ -16,7 +16,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { SidebarItem } from "@/lib/types";
-import { CalendarClock, ChevronRight, House, UserPlus } from "lucide-react";
+import {
+  Calendar,
+  CalendarClock,
+  ChevronRight,
+  House,
+  UserPlus,
+} from "lucide-react";
 import Link from "next/link";
 
 const ITEMS: SidebarItem[] = [
@@ -38,6 +44,12 @@ const ITEMS: SidebarItem[] = [
     title: "Invites",
     url: "/admin/invites",
     icon: UserPlus,
+  },
+  {
+    title: "Calendar",
+    url: "/admin/calendar",
+    icon: Calendar,
+    items: [{ title: "New Event", url: "/admin/calendar/events/new" }],
   },
 ];
 

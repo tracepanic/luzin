@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/utils/provider";
 import type { ReactNode } from "react";
 import "./globals.css";
 
@@ -10,8 +11,10 @@ export default function Layout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        {children}
-        <Toaster />
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

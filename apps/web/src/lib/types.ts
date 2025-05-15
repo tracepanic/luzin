@@ -1,7 +1,9 @@
+import { events } from "@/db/schema/events";
 import { invites } from "@/db/schema/invites";
 import { academicYears } from "@/db/schema/years";
 import { InferSelectModel } from "drizzle-orm";
 import { LucideIcon } from "lucide-react";
+import { RefObject } from "react";
 
 export const UserRole = {
   STUDENT: "student",
@@ -13,6 +15,15 @@ export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
 export type AcademicYear = InferSelectModel<typeof academicYears>;
 export type Invite = InferSelectModel<typeof invites>;
+export type Event = InferSelectModel<typeof events>;
+
+export interface StoreEvent {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  backgroundColor: string;
+}
 
 export interface SidebarItem {
   title: string;

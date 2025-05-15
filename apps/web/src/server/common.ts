@@ -1,25 +1,28 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import {
-  ForbiddenException,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from "@repo/actionkit";
+import type { User } from "better-auth";
 import { headers } from "next/headers";
 
-export async function validateUserIsAdmin() {
+export async function validateUserIsAdmin(): Promise<User> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
 
-    if (!session || !session.user) {
-      throw new UnauthorizedException();
+    if (
+      !session ||
+      !session.user ||
+      !session.user.role ||
+      session.user.role !== "admin"
+    ) {
+      throw new Error("User is unauthorized");
     }
 
-    if (!session.user.role || session.user.role !== "admin") {
-      throw new ForbiddenException();
-    }
+    return session.user;
   } catch (error) {
-    throw new InternalServerErrorException();
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error("User is unauthorized");
   }
 }
