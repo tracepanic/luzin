@@ -251,7 +251,7 @@ export default function Page() {
                 <Button
                   type="submit"
                   className="w-full sm:w-fit"
-                  disabled={form.formState.isSubmitting}
+                  disabled={isPending}
                 >
                   <UserPlus className="mr-2 h-4 w-4" />
                   Send Invite

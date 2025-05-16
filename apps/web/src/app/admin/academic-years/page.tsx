@@ -91,7 +91,7 @@ export default function Page() {
             <CalendarClock className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
             <CardTitle>No Academic Years Found</CardTitle>
             <CardDescription>
-              You haven't created any academic years yet. Create your first
+              You haven&apos;t created any academic years yet. Create your first
               academic year to get started.
             </CardDescription>
           </CardHeader>

@@ -23,14 +23,14 @@ export default function Page() {
   const { data, isPending, error } = authClient.useSession();
 
   useEffect(() => {
-    if (!isPending && (!data || error || !data.user)) {
+    if (!isPending && (!data || error)) {
       toast.error("Login to access this page");
       router.push("/login");
     }
   }, [data, error, isPending, router]);
 
   useEffect(() => {
-    if (!isPending && data?.user!.emailVerified) {
+    if (!isPending && data?.user.emailVerified) {
       toast.error("Email already verified");
       router.push("/email-verification-successful");
     }
@@ -94,7 +94,7 @@ export default function Page() {
           onClick={handleSendEmail}
           disabled={cooldown > 0 || isSending}
         >
-          Resend Email ({cooldown})
+          Resend Email {cooldown > 0 && `(${cooldown})`}
         </Button>
         <Button asChild className="w-full">
           <Link href="/login">Already Verified? Login</Link>

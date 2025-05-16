@@ -52,7 +52,7 @@ export default function Page() {
   }, [isSuccess, data, updateEvents]);
 
   const handleEventClick = (info: EventClickArg) => {
-    console.log("Clicked");
+    console.log(info);
   };
 
   function updateCalendarCurrentView(type: CurrentCalendarViewType) {

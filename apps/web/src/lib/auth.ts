@@ -4,12 +4,9 @@ import { sessions } from "@/db/schema/sessions";
 import { users } from "@/db/schema/users";
 import { verifications } from "@/db/schema/verifications";
 import { sendVerificationEmail } from "@/emails";
-import { getUserRole } from "@/server/user";
-import { queryClient } from "@/utils/provider";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { customSession } from "better-auth/plugins";
 
 const drizzleSchemas = { users, accounts, sessions, verifications };
 
@@ -49,39 +46,5 @@ export const auth = betterAuth({
     },
   },
   advanced: { database: { generateId: false } },
-  plugins: [
-    customSession(async ({ user, session }) => {
-      // Right now we read from DB, we will definately need a cache for this
-      let data = null;
-      try {
-        const response = await queryClient.fetchQuery({
-          queryKey: ["user-role", user.id],
-          queryFn: ({ queryKey }) => {
-            const [, id] = queryKey;
-            return getUserRole(id);
-          },
-        });
-        if (response) {
-          data = response;
-        }
-      } catch {}
-      // Handle errors
-
-      if (!data) {
-        return {
-          session: null,
-          user: null,
-        };
-      }
-
-      return {
-        session,
-        user: {
-          ...user,
-          role: data,
-        },
-      };
-    }),
-    nextCookies(),
-  ],
+  plugins: [nextCookies()],
 });

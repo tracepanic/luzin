@@ -41,7 +41,7 @@ export const CreateEventSchema = z
           try {
             rrulestr(value);
             return true;
-          } catch (error) {
+          } catch {
             return false;
           }
         },

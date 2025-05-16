@@ -40,7 +40,7 @@ export function urlToBreadcrumbs(
   let urlObj: URL;
   try {
     urlObj = new URL(url);
-  } catch (e) {
+  } catch {
     urlObj = new URL(
       url.startsWith("/") ? url : `/${url}`,
       "http://example.com",

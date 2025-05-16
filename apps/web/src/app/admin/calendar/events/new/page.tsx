@@ -106,7 +106,7 @@ export default function Page() {
         toast.error("Invalid rrule");
         return;
       }
-    } catch (error) {
+    } catch {
       toast.error("Invalid rrule");
       return;
     }
@@ -276,6 +276,7 @@ export default function Page() {
                         <Textarea
                           placeholder="Enter event description"
                           className="max-w-lg"
+                          {...field}
                         ></Textarea>
                       </FormControl>
                       <FormMessage />
@@ -335,8 +336,8 @@ export default function Page() {
                       </FormControl>
                       <FormDescription>
                         How long the event will take, in the format
-                        hh:mm:ss.sss, hh:mm:sss or hh:mm. For example, '05:00'
-                        signifies 5 hours.
+                        hh:mm:ss.sss, hh:mm:sss or hh:mm. For example,
+                        &apos;05:00&apos; signifies 5 hours.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

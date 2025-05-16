@@ -3,8 +3,7 @@
 import { db } from "@/db";
 import { events } from "@/db/schema/events";
 import { schools } from "@/db/schema/schools";
-import { Event } from "@/lib/types";
-import { CreateEventSchema } from "@/schemas/events";
+import { CreateEventSchema, Event } from "@/schemas/events";
 import { validateUserIsAdmin } from "@/server/common";
 import { queryClient } from "@/utils/provider";
 import { rrulestr } from "rrule";
@@ -22,7 +21,7 @@ export async function adminCreateNewEvent(
       if (!rule) {
         throw new Error("Failed to parse rrule");
       }
-    } catch (error) {
+    } catch {
       throw new Error("Failed to parse rrule");
     }
 

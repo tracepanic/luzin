@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,30 +5,24 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 import { MailCheck } from "lucide-react";
+import { headers } from "next/headers";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  const router = useRouter();
-  const { data, isPending, error } = authClient.useSession();
+export default async function Page() {
+  const session = await auth.api.getSession({ headers: await headers() });
 
-  useEffect(() => {
-    if (!isPending && (!data || error || !data.user)) {
-      toast.error("Login to access this page");
-      router.push("/login");
-    }
-  }, [data, error, isPending, router]);
+  if (!session) {
+    redirect("/login");
+    return;
+  }
 
-  useEffect(() => {
-    if (!isPending && !data?.user!.emailVerified) {
-      toast.error("Email not verified yet");
-      router.push("/verify-email");
-    }
-  }, [data, isPending, router]);
+  if (!session.user.emailVerified) {
+    redirect("/verify-email");
+    return;
+  }
 
   return (
     <Card className="max-w-lg mx-auto px-4 mt-10">

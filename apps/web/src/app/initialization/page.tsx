@@ -50,7 +50,7 @@ export default function Page() {
       toast.error("LMS already initialized");
       router.push("/");
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, data, router]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: initializeLMS,
@@ -180,7 +180,7 @@ export default function Page() {
 
                 <Button
                   type="submit"
-                  disabled={schoolForm.formState.isSubmitting}
+                  disabled={isPending}
                   className="w-full mt-5"
                 >
                   Continue to School Details <MoveRight className="mt-0.5" />
@@ -211,7 +211,7 @@ export default function Page() {
 
                 <Button
                   type="submit"
-                  disabled={schoolForm.formState.isSubmitting}
+                  disabled={isPending}
                   className="w-full mt-5"
                 >
                   Initialize LMS

@@ -120,7 +120,7 @@ export function generateCalendarEvents(events: Event[]): CalendarEvent[] {
           end,
         });
       });
-    } catch (error) {
+    } catch {
       toast.error("Failed to add event to calendar");
     }
   });

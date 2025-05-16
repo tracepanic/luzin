@@ -7,7 +7,7 @@ import { users } from "@/db/schema/users";
 import { academicYears } from "@/db/schema/years";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 
 export const events = pgTable("events", {
   id: text("id")

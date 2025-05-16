@@ -64,7 +64,7 @@ export async function initializeLMS({
           throw new Error("Failed to create admin");
         }
       });
-    } catch (error) {
+    } catch {
       // Delete user created by better auth if this fails
 
       throw new Error("Failed to initialize LMS");
