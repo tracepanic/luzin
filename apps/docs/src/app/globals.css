@@ -9,3 +9,9 @@
     font-style: normal;
     font-display: swap;
 }
+
+@layer base {
+    body {
+        font-family: "Manrope", sans-serif;
+    }
+}
