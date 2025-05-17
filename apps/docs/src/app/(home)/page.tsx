@@ -1,8 +1,10 @@
+import { Ripple } from "@/components/custom/ripple";
 import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="flex flex-1 flex-col justify-center text-center">
+    <main className="flex flex-1 flex-col justify-center text-center relative overflow-hidden">
+      <Ripple />
       <h1 className="mb-4 text-2xl font-bold">Welcome to Luzin</h1>
       <p className="text-fd-muted-foreground">
         You can open{" "}
