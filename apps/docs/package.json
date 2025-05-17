@@ -11,7 +11,7 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "fumadocs-core": "15.2.14",
+    "fumadocs-core": "15.3.3",
     "fumadocs-mdx": "11.6.3",
     "fumadocs-ui": "15.2.14",
     "lucide-react": "^0.507.0",
