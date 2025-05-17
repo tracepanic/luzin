@@ -21,6 +21,7 @@ import {
   CalendarClock,
   ChevronRight,
   House,
+  School,
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
@@ -50,6 +51,15 @@ const ITEMS: SidebarItem[] = [
     url: "/admin/calendar",
     icon: Calendar,
     items: [{ title: "New Event", url: "/admin/calendar/events/new" }],
+  },
+  {
+    title: "Classes",
+    url: "/admin/classes",
+    icon: School,
+    items: [
+      { title: "Class Instances", url: "/admin/classes/instances" },
+      { title: "Class Templates", url: "/admin/classes/templates" },
+    ],
   },
 ];
 

@@ -5,12 +5,12 @@ import { academicYears } from "@/db/schema/years";
 import { CreateAcademicYearSchema } from "@/lib/schema";
 import { AcademicYear } from "@/lib/types";
 import { validateUserIsAdmin } from "@/server/common";
-import { asc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 export async function createAcademicYear(
   values: z.infer<typeof CreateAcademicYearSchema>,
-) {
+): Promise<boolean> {
   try {
     const data = CreateAcademicYearSchema.parse(values);
 
@@ -24,6 +24,8 @@ export async function createAcademicYear(
     if (res.length !== 1 || !res[0]?.id) {
       throw new Error("Failed to create academic year");
     }
+
+    return true;
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -38,7 +40,7 @@ export async function getAcademicYears(): Promise<AcademicYear[]> {
     return db
       .select()
       .from(academicYears)
-      .orderBy(asc(academicYears.createdAt));
+      .orderBy(desc(academicYears.createdAt));
   } catch (error) {
     if (error instanceof Error) {
       throw error;

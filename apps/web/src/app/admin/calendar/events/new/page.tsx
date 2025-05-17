@@ -29,10 +29,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateEventSchema } from "@/schemas/events";
+import { getClassInsances } from "@/server/classes";
 import { adminCreateNewEvent } from "@/server/events";
 import { getAcademicYears } from "@/server/year";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueries } from "@tanstack/react-query";
+import { ArrowRight, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { rrulestr } from "rrule";
@@ -42,11 +45,18 @@ import { z } from "zod";
 export default function Page() {
   const [activeTab, setActiveTab] = useState("info");
 
+  const router = useRouter();
+
   const results = useQueries({
     queries: [
       {
         queryKey: ["academic-years"],
         queryFn: getAcademicYears,
+        meta: { showError: true },
+      },
+      {
+        queryKey: ["class-instances"],
+        queryFn: getClassInsances,
         meta: { showError: true },
       },
     ],
@@ -57,18 +67,20 @@ export default function Page() {
     onSuccess: () => {
       toast.dismiss();
       toast.success("Event created successfully");
-      // Redirect
+      router.push("/admin/calendar");
     },
     onError: (error) => {
       toast.dismiss();
       toast.error(error.message || "Failed to create event");
-      // Reset form
+      form.reset();
+      setActiveTab("info");
     },
   });
 
-  const [yearsResult] = results;
+  const [yearsResult, classInstacesResults] = results;
 
   const years = yearsResult.data ?? [];
+  const classInstaces = classInstacesResults.data ?? [];
   const isInitialPending = results.some((r) => r.isPending);
 
   const form = useForm<z.infer<typeof CreateEventSchema>>({
@@ -248,6 +260,39 @@ export default function Page() {
                   />
                 )}
 
+                {form.watch("scope") === "class_instance" && (
+                  <FormField
+                    control={form.control}
+                    name="classInstanceId"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col items-start">
+                        <FormLabel>Class Instance</FormLabel>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-full max-w-lg">
+                              <SelectValue placeholder="Select class instance" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {classInstaces.map((classInstace) => (
+                                <SelectItem
+                                  key={classInstace.id}
+                                  value={classInstace.id}
+                                >
+                                  {classInstace.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
                   name="location"
@@ -284,13 +329,17 @@ export default function Page() {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full max-w-lg mt-5"
-                >
-                  Continue
-                </Button>
+                <div className="w-full flex justify-end">
+                  <Button
+                    type="button"
+                    disabled={isPending}
+                    className="w-fit mt-3"
+                    onClick={() => setActiveTab("recurrence")}
+                  >
+                    Continue
+                    <ArrowRight className="mt-0.5" />
+                  </Button>
+                </div>
               </TabsContent>
 
               <TabsContent value="recurrence" className="mt-10 space-y-5">
@@ -343,6 +392,49 @@ export default function Page() {
                     </FormItem>
                   )}
                 />
+
+                <div className="w-full flex justify-end">
+                  <Button
+                    type="button"
+                    disabled={isPending}
+                    className="w-fit mt-3"
+                    onClick={() => setActiveTab("attendees")}
+                  >
+                    Continue
+                    <ArrowRight className="mt-0.5" />
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="attendees" className="mt-10 space-y-5">
+                {form.watch("scope") !== "targeted" && (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">
+                      Attendee Management Not Available
+                    </h3>
+                    <p className="text-muted-foreground max-w-md">
+                      Individual attendee management is only available for
+                      events with a &quot;Targeted&quot; scope.
+                      {form.watch("scope") === "global" &&
+                        " This event is visible to everyone in the school."}
+                      {form.watch("scope") === "class_instance" &&
+                        " This event is visible to an entire class."}
+                      {form.watch("scope") === "academic_year" &&
+                        " This event is visible to an entire academic year."}
+                    </p>
+                  </div>
+                )}
+
+                <div className="w-full flex justify-end">
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="w-fit mt-3"
+                  >
+                    Create Event
+                  </Button>
+                </div>
               </TabsContent>
             </Tabs>
           </form>

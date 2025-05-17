@@ -11,7 +11,7 @@ import { z } from "zod";
 
 export async function adminCreateNewEvent(
   values: z.infer<typeof CreateEventSchema>,
-) {
+): Promise<boolean> {
   try {
     const data = CreateEventSchema.parse(values);
 
@@ -60,6 +60,8 @@ export async function adminCreateNewEvent(
     if (res.length !== 1 || !res[0]?.id) {
       throw new Error("Failed to create event");
     }
+
+    return true;
   } catch (error) {
     if (error instanceof Error) {
       throw error;

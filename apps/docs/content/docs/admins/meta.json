@@ -3,5 +3,14 @@
   "description": "Administrator documentation",
   "icon": "UserCog",
   "root": true,
-  "pages": ["---Getting Started---", "index"]
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "initialization",
+    "---Managing the LMS---",
+    "dashboard",
+    "academic-year",
+    "invites",
+    "events"
+  ]
 }

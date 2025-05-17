@@ -19,7 +19,6 @@ interface AdminCalendarAction {
 
 const useAdminCalendarStore = create<AdminCalendarState & AdminCalendarAction>(
   (set) => ({
-    // Removed 'get' as it's not needed in the revised updateEvents
     events: [],
     calendarEvents: [],
     currentView: "dayGridMonth",
@@ -29,11 +28,10 @@ const useAdminCalendarStore = create<AdminCalendarState & AdminCalendarAction>(
     },
 
     updateEvents: (input) => {
-      // Assuming 'input' is the complete and fresh list of events
       const generatedEvents = generateCalendarEvents(input);
       set({
-        events: input, // Set events to the new input
-        calendarEvents: generatedEvents, // Set calendarEvents based on the new input
+        events: input,
+        calendarEvents: generatedEvents,
       });
     },
   }),

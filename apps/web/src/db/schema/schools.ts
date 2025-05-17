@@ -1,7 +1,6 @@
 import { admins } from "@/db/schema/admins";
 import { classes } from "@/db/schema/classes";
 import { events } from "@/db/schema/events";
-import { invites } from "@/db/schema/invites";
 import { students } from "@/db/schema/students";
 import { teachers } from "@/db/schema/teachers";
 import { timestamps } from "@/db/schema/timestamps";
@@ -23,6 +22,5 @@ export const schoolsRelations = relations(schools, ({ many }) => ({
   classes: many(classes),
   students: many(students),
   teachers: many(teachers),
-  invites: many(invites),
   events: many(events),
 }));

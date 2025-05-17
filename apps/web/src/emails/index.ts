@@ -24,7 +24,7 @@ export async function sendInviteEmail(invite: Invite) {
   await resend.emails.send({
     to: [invite.email],
     from: `Luzin Team <auth@${envClient.NEXT_PUBLIC_EMAIL_DOMAIN}>`,
-    subject: "Invitation to Join (__school__)",
+    subject: "Invitation to Join a School",
     react: InviteEmailTemplate({ invite }),
   });
 }

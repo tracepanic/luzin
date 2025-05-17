@@ -14,7 +14,7 @@ export const classes = pgTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
-    name: text("name").notNull(),
+    name: text("name").notNull().unique(),
     schoolId: text("school_id")
       .notNull()
       .references(() => schools.id, {
@@ -34,6 +34,7 @@ export const classInstances = pgTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
+    name: text("name").notNull().unique(),
     academicYearId: text("academic_year_id")
       .notNull()
       .references(() => academicYears.id, {

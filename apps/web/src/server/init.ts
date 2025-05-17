@@ -16,7 +16,7 @@ export async function initializeLMS({
 }: {
   user: z.infer<typeof SignupSchema>;
   school: z.infer<typeof CreateSchoolSchema>;
-}) {
+}): Promise<boolean> {
   try {
     const validUser = SignupSchema.parse(user);
     const validSchool = CreateSchoolSchema.parse(school);
@@ -64,6 +64,8 @@ export async function initializeLMS({
           throw new Error("Failed to create admin");
         }
       });
+
+      return true;
     } catch {
       // Delete user created by better auth if this fails
 

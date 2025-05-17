@@ -1,6 +1,6 @@
 "use client";
 
-import { columns } from "@/app/admin/academic-years/all/table";
+import { columns } from "@/app/admin/classes/templates/table";
 import { Loader } from "@/components/custom/loader";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAcademicYears } from "@/server/year";
+import { getClasses } from "@/server/classes";
 import { useQuery } from "@tanstack/react-query";
 import {
   flexRender,
@@ -24,8 +24,8 @@ import Link from "next/link";
 
 export default function Page() {
   const { isPending, data } = useQuery({
-    queryKey: ["academic-years"],
-    queryFn: getAcademicYears,
+    queryKey: ["class-templates"],
+    queryFn: getClasses,
     meta: { showError: true },
   });
 
@@ -37,13 +37,13 @@ export default function Page() {
 
   return (
     <div className="container w-full">
-      <h1 className="text-3xl font-bold">All Academic Years</h1>
+      <h1 className="text-3xl font-bold">All Class Templates</h1>
       <div className="mt-5 flex justify-end">
         <Link
-          href="/admin/academic-years/new"
+          href="/admin/classes/templates/new"
           className={buttonVariants({ variant: "default" })}
         >
-          <Plus className="mr-2 h-4 w-4" /> New Academic Year
+          <Plus className="mr-2 h-4 w-4" /> New Class Template
         </Link>
       </div>
 
@@ -95,7 +95,7 @@ export default function Page() {
                     colSpan={columns.length}
                     className="h-24 text-center text-muted-foreground"
                   >
-                    No academic years found.
+                    No class templates found.
                   </TableCell>
                 </TableRow>
               )}
